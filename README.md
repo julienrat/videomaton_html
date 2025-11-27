@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Videomaton](screenshot.svg)
+![Videomaton](screenshot.png)
 
 **Application web de videomaton avec détection automatique de silence**
 
