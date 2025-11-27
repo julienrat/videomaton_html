@@ -1,102 +1,182 @@
-# Videomaton (Web)
+# 🎥 Videomaton
 
-Application web de videomaton: aperçu caméra, enregistrement vidéo, raccourci clavier, compte à rebours, indicateur REC, bordure rouge, fond personnalisable, sélection de caméra, et arrêt automatique sur silence.
+<div align="center">
 
-## Démo (GitHub Pages)
-- URL: https://julienrat.github.io/videomaton_html/
+![Videomaton](screenshot.svg)
 
-## Prérequis
-- Navigateur moderne (Chrome/Edge recommandés pour le choix de dossier)
-- Caméra et micro disponibles
-- Accès autorisé à la caméra et au micro dans le navigateur
+**Application web de videomaton avec détection automatique de silence**
 
-## Lancement local
-Depuis un terminal, lancez un petit serveur HTTP à la racine du projet:
+[🚀 Démo en ligne](https://julienrat.github.io/videomaton_html/) | [📖 Documentation](#fonctionnalités)
 
+</div>
+
+---
+
+## 📋 Description
+
+**Videomaton** est une application web moderne permettant d'enregistrer des vidéos avec détection automatique de silence. Parfaite pour des témoignages, interviews, ou tout enregistrement nécessitant un démarrage/arrêt automatisé.
+
+L'application utilise les API Web modernes (MediaRecorder, Web Audio API, File System Access) pour offrir une expérience fluide et professionnelle directement dans le navigateur.
+
+## ✨ Fonctionnalités
+
+### 🎬 Enregistrement vidéo
+- **Aperçu en temps réel** de la caméra
+- **Sélection de caméra** (si plusieurs disponibles)
+- **Compte à rebours** configurable avant enregistrement
+- **Indicateur REC** animé avec bordure rouge pulsante
+- **Enregistrement WebM** (VP8/VP9 + Opus)
+- **Miroir** : option pour retourner horizontalement l'image
+
+### 🔊 Détection de silence intelligente
+- **Arrêt automatique** lorsque le silence est détecté
+- **Vu-mètre en temps réel** avec visualisation du niveau audio
+- **Calibration automatique** du seuil de silence
+- **Seuil et durée configurables** pour s'adapter à tous les environnements
+
+### ⌨️ Contrôles et raccourcis
+- **Touche personnalisable** pour démarrer/arrêter l'enregistrement
+- **Touche `m`** pour afficher/masquer le panneau de paramètres
+- **Protection anti double-clic** configurable
+- **Détection intelligente** : les raccourcis ne fonctionnent pas dans les champs de saisie
+
+### 🎨 Personnalisation
+- **Phrase personnalisée** affichée au-dessus de la caméra
+- **Fond personnalisable** : couleur unie ou image
+- **Interface adaptative** : mode plein écran ou avec panneau latéral
+- **Thème sombre** moderne et élégant
+
+### 💾 Sauvegarde
+- **Sauvegarde directe** dans un dossier choisi (Chrome/Edge)
+- **Téléchargement automatique** en fallback
+- **Nom horodaté** : `videomaton_YYYY-MM-DD_HH-MM-SS.webm`
+- **Paramètres persistants** via localStorage
+
+## 🚀 Utilisation
+
+### Démo en ligne
+Accédez directement à l'application : **[https://julienrat.github.io/videomaton_html/](https://julienrat.github.io/videomaton_html/)**
+
+### Installation locale
+
+1. Clonez le dépôt :
 ```bash
-python3 -m http.server 8080 --directory /home/julien2002/Developpement/videomaton_html
+git clone https://github.com/julienrat/videomaton_html.git
+cd videomaton_html
 ```
 
-Puis ouvrez l’URL: `http://localhost:8080`.
-
-Astuce: le choix de dossier d’enregistrement (File System Access API) fonctionne sur `http(s)` et `localhost` dans Chrome/Edge.
-
-## Utilisation
-- Appuyer sur « m »: affiche/masque le panneau de paramètres.
-- Bouton « Démarrer »: lance l’enregistrement (après le compte à rebours s’il est activé).
-- Bouton « Arrêter »: stoppe l’enregistrement.
-- Indicateur REC et bordure rouge visibles pendant l’enregistrement.
-
-## Favicons
-- Vous pouvez ajouter des favicons à la page en insérant ces lignes dans `index.html` (dans `<head>`):
-
-```html
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0d1117">
-```
-
-- Générer les fichiers avec un générateur (ex. RealFaviconGenerator) et placer les fichiers à la racine du dépôt (ou adapter les chemins si besoin).
-
-### Paramètres (panneau latéral)
-- Caméra: sélectionnez l’entrée vidéo (si plusieurs disponibles).
-- Phrase: texte affiché au-dessus de la vidéo (grand titre lorsque le menu est masqué).
-- Raccourci clavier: cliquez dans le champ et appuyez sur la touche désirée pour démarrer/arrêter.
-- Pause anti double-clic (ms): délai minimum entre deux toggles (clavier/boutons) pour éviter les doubles déclenchements.
-- Compte à rebours (secondes): temps avant démarrage de l’enregistrement.
-- Fond: 
-  - Couleur de fond.
-  - Image de fond via URL ou sélection de fichier (le fichier est converti en Data URL et mémorisé localement).
-- Seuil de silence (0–1): niveau RMS en dessous duquel on considère qu’il y a silence.
-  - Vu-mètre sous le slider + marqueur du seuil pour un réglage visuel.
-  - Champ numérique synchronisé (0–1 / pas 0.01).
-  - Calibrer au niveau actuel: fixe rapidement le seuil d’après le niveau mesuré en direct.
-- Durée de silence avant arrêt (ms): temps consécutif sous le seuil pour arrêter automatiquement l’enregistrement.
-- Dossier d’enregistrement: 
-  - Choisir un dossier (Chrome/Edge). 
-  - Si non disponible/non autorisé, le fichier est téléchargé (fallback).
-
-Tous les paramètres sont mémorisés dans le navigateur (`localStorage`).
-
-## Enregistrement
-- Format: `webm` (codecs dépendants du support du navigateur; VP8/VP9 + Opus généralement).
-- Nom de fichier: `videomaton_YYYY-MM-DD_HH-MM-SS.webm`.
-- Destination:
-  - Si un dossier est choisi (et autorisé): écriture directe dans le dossier.
-  - Sinon: téléchargement via le navigateur.
-
-## Raccourcis et comportements
-- « m »: afficher/masquer le menu.
-- Touche personnalisée: démarre/arrête (bloquée pendant le compte à rebours, anti-repeat, et respect du délai anti double-clic).
-
-## Détection du silence
-- Mesure du niveau RMS en temps réel (via Web Audio `AnalyserNode`).
-- Arrêt automatique si le niveau reste sous le seuil pendant la durée configurée.
-- Vu-mètre global sous la vidéo et vu-mètre compact dans les paramètres.
-
-## Compatibilité
-- Testé sur Chrome/Edge récents.
-- Safari/Firefox: certaines fonctionnalités (choix de dossier, certains codecs) peuvent être limitées.
-
-## Dépannage
-- Pas d’image/son: vérifier les permissions caméra/micro dans le navigateur.
-- Pas de choix de dossier: utiliser Chrome/Edge sur `http(s)` ou `localhost`.
-- Pas d’audio dans l’aperçu: l’aperçu est muet (muted) par design; l’audio est enregistré normalement.
-- Double démarrage/arrêt: ajuster la « Pause anti double-clic (ms) » et vérifier que la touche raccourci n’est pas répétée par le clavier.
-
-## Développement
-Fichiers principaux:
-- `index.html`: structure de la page et panneau de paramètres.
-- `styles.css`: styles, layout, bordure d’enregistrement, indicateur REC, vu-mètres.
-- `app.js`: logique (caméra, enregistrement, raccourcis, audio, sauvegarde, paramètres persistants).
-
-Serveur de dev suggéré:
+2. Lancez un serveur HTTP local :
 ```bash
-python3 -m http.server 8080 --directory /chemin/vers/videomaton_html
+# Python 3
+python3 -m http.server 8080
+
+# OU Python 2
+python -m SimpleHTTPServer 8080
+
+# OU avec Node.js (npx)
+npx serve
 ```
 
-## Licence
-À définir par le propriétaire du dépôt.
+3. Ouvrez votre navigateur : `http://localhost:8080`
+
+### Prérequis
+- Navigateur moderne (Chrome/Edge recommandés)
+- Caméra et microphone disponibles
+- Permissions caméra/micro autorisées
+
+## 🎮 Guide rapide
+
+### Premiers pas
+1. **Autorisez l'accès** à la caméra et au microphone
+2. Appuyez sur **`m`** pour afficher le panneau de paramètres
+3. Configurez votre **phrase** et votre **raccourci clavier**
+4. Appuyez sur votre raccourci pour **démarrer l'enregistrement**
+5. L'enregistrement s'arrête **automatiquement** après détection de silence
+
+### Paramètres principaux
+
+| Paramètre | Description |
+|-----------|-------------|
+| **Caméra** | Sélection de la caméra source |
+| **Phrase** | Texte affiché au-dessus de la vidéo |
+| **Raccourci clavier** | Touche pour démarrer/arrêter (ex: Espace) |
+| **Compte à rebours** | Délai avant démarrage (en secondes) |
+| **Miroir** | Retourner l'image horizontalement |
+| **Seuil de silence** | Niveau audio considéré comme silence (0-1) |
+| **Durée de silence** | Temps de silence avant arrêt automatique |
+| **Pause anti double-clic** | Délai minimum entre deux déclenchements |
+
+### Raccourcis clavier
+
+- **`m`** : Afficher/masquer le panneau de paramètres
+- **Touche personnalisée** : Démarrer/arrêter l'enregistrement
+- **`Escape`** (dans le champ raccourci) : Effacer le raccourci
+
+## 🛠️ Structure du projet
+
+```
+videomaton_html/
+├── index.html      # Structure HTML de l'application
+├── app.js          # Logique métier (caméra, enregistrement, audio)
+├── styles.css      # Styles et animations
+├── README.md       # Documentation
+└── .gitignore      # Fichiers ignorés par Git
+```
+
+## 🌐 Compatibilité
+
+| Fonctionnalité | Chrome/Edge | Firefox | Safari |
+|----------------|-------------|---------|--------|
+| Enregistrement vidéo | ✅ | ✅ | ✅ |
+| Détection de silence | ✅ | ✅ | ✅ |
+| Choix de dossier | ✅ | ❌ | ❌ |
+| WebM/VP9 | ✅ | ✅ | ⚠️ |
+
+**Recommandation** : Chrome ou Edge pour une expérience optimale.
+
+## 🐛 Dépannage
+
+| Problème | Solution |
+|----------|----------|
+| Pas d'image/son | Vérifier les permissions caméra/micro |
+| Choix de dossier indisponible | Utiliser Chrome/Edge sur http(s) ou localhost |
+| Aperçu sans audio | Normal, l'aperçu est muet (le son est enregistré) |
+| Double démarrage/arrêt | Augmenter la "Pause anti double-clic" |
+| Arrêt trop rapide | Augmenter la durée de silence ou baisser le seuil |
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à :
+- Signaler des bugs
+- Proposer de nouvelles fonctionnalités
+- Améliorer la documentation
+- Soumettre des pull requests
+
+## 📄 Licence
+
+Ce projet est sous licence **Creative Commons BY-SA 4.0** (CC-BY-SA 4.0).
+
+**© 2025 Julien Rat - Les Petits Débrouillards**
+
+Vous êtes libre de :
+- **Partager** : copier, distribuer et communiquer le matériel par tous moyens et sous tous formats
+- **Adapter** : remixer, transformer et créer à partir du matériel pour toute utilisation
+
+Selon les conditions suivantes :
+- **Attribution** : Vous devez créditer l'œuvre, intégrer un lien vers la licence et indiquer si des modifications ont été effectuées
+- **Partage dans les mêmes conditions** : Si vous modifiez, transformez ou créez à partir du matériel, vous devez diffuser vos contributions sous la même licence que l'original
+
+Plus d'informations : [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr)
+
+---
+
+<div align="center">
+
+**⚡ Note technique**
+
+*Ce code a été développé avec l'assistance d'une intelligence artificielle (GitHub Copilot / Claude).*
+
+Fait avec ❤️ pour l'éducation populaire
+
+</div>
 

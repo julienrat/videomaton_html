@@ -1,0 +1,7 @@
+Pour ajouter un screenshot:
+1. Lancez l'application
+2. Faites une capture d'écran (avec le panneau de paramètres visible)
+3. Enregistrez l'image sous le nom "screenshot.png" à la racine du projet
+4. Supprimez ce fichier .txt
+
+Dimensions recommandées: 1200x675px (16:9) pour un bon rendu sur GitHub
