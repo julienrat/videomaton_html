@@ -18,6 +18,8 @@
   let lastToggleAt = 0;
   let toggleCooldownMs = 600;
   let isMirrored = false;
+  let audioLevelUpdateInterval = 100; // ms entre chaque mise à jour (10 fps au lieu de 60)
+  let lastAudioUpdate = 0;
 
   /** Elements **/
   const el = (id) => document.getElementById(id);
@@ -55,6 +57,7 @@
   const layout = document.querySelector('.layout');
   const cooldownInput = document.getElementById('cooldownInput');
   const mirrorInput = document.getElementById('mirrorInput');
+  const audioUpdateRateInput = document.getElementById('audioUpdateRateInput');
 
   /** Utils **/
   const fmtTime = () => new Date().toISOString().replaceAll(':', '-').replace('T', '_').split('.')[0];
@@ -69,7 +72,8 @@
       silenceThreshold,
       silenceDurationMs,
       toggleCooldownMs,
-      isMirrored
+      isMirrored,
+      audioLevelUpdateInterval
     };
     localStorage.setItem('videomaton_settings', JSON.stringify(settings));
   };
@@ -87,6 +91,7 @@
       if(Number.isFinite(s.silenceDurationMs)) silenceDurationMs = s.silenceDurationMs; // toujours stocké en ms
       if(Number.isFinite(s.toggleCooldownMs)) toggleCooldownMs = s.toggleCooldownMs;
       if(typeof s.isMirrored === 'boolean') isMirrored = s.isMirrored;
+      if(Number.isFinite(s.audioLevelUpdateInterval)) audioLevelUpdateInterval = s.audioLevelUpdateInterval;
     }catch{}
   };
 
@@ -104,6 +109,7 @@
     silenceDurationInput.value = String(silenceDurationMs / 1000); // afficher en secondes
     if(cooldownInput) cooldownInput.value = String(toggleCooldownMs);
     if(mirrorInput) mirrorInput.checked = isMirrored;
+    if(audioUpdateRateInput) audioUpdateRateInput.value = String(audioLevelUpdateInterval);
     if(preview) preview.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
   };
 
@@ -157,7 +163,8 @@
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
       audioSource = audioContext.createMediaStreamSource(stream);
       analyser = audioContext.createAnalyser();
-      analyser.fftSize = 2048;
+      analyser.fftSize = 512; // Réduit de 2048 à 512 (4x moins de calculs)
+      analyser.smoothingTimeConstant = 0.8; // Lissage pour réduire les variations
       audioSource.connect(analyser);
       monitorAudioLevel();
     }catch(err){
@@ -169,36 +176,43 @@
     if(!analyser) return;
     const buffer = new Uint8Array(analyser.fftSize);
     const step = () => {
-      analyser.getByteTimeDomainData(buffer);
-      // Compute RMS from time-domain samples
-      let sum = 0;
-      for(let i=0;i<buffer.length;i++){
-        const v = (buffer[i] - 128) / 128;
-        sum += v*v;
-      }
-      const rms = Math.sqrt(sum / buffer.length);
-      lastRms = rms;
-      const pct = Math.min(1, rms * 4) * 100;
-      audioLevel.style.width = `${pct}%`;
-      if(audioLevelSettings){ audioLevelSettings.style.width = `${pct}%`; }
-      if(audioThresholdMarker){
-        const markerPct = Math.min(1, (Number(silenceThreshold) || 0) * 4) * 100;
-        audioThresholdMarker.style.left = `calc(${markerPct}% - 1px)`;
-      }
+      const now = performance.now();
+      
+      // Throttle: mise à jour seulement toutes les 100ms au lieu de chaque frame
+      if(now - lastAudioUpdate >= audioLevelUpdateInterval){
+        lastAudioUpdate = now;
+        
+        analyser.getByteTimeDomainData(buffer);
+        // Compute RMS from time-domain samples (échantillonnage réduit)
+        let sum = 0;
+        const step = 4; // Analyser 1 échantillon sur 4 pour réduire le CPU
+        for(let i=0; i<buffer.length; i+=step){
+          const v = (buffer[i] - 128) / 128;
+          sum += v*v;
+        }
+        const rms = Math.sqrt(sum / (buffer.length / step));
+        lastRms = rms;
+        const pct = Math.min(1, rms * 4) * 100;
+        audioLevel.style.width = `${pct}%`;
+        if(audioLevelSettings){ audioLevelSettings.style.width = `${pct}%`; }
+        if(audioThresholdMarker){
+          const markerPct = Math.min(1, (Number(silenceThreshold) || 0) * 4) * 100;
+          audioThresholdMarker.style.left = `calc(${markerPct}% - 1px)`;
+        }
 
-      if(isRecording){
-        const now = performance.now();
-        if(rms < silenceThreshold){
-          if(silenceStartAt == null) silenceStartAt = now;
-          const elapsed = now - silenceStartAt;
-          if(elapsed >= silenceDurationMs){
-            stopRecording(/*reason*/'Silence détecté');
+        if(isRecording){
+          if(rms < silenceThreshold){
+            if(silenceStartAt == null) silenceStartAt = now;
+            const elapsed = now - silenceStartAt;
+            if(elapsed >= silenceDurationMs){
+              stopRecording(/*reason*/'Silence détecté');
+            }
+          } else {
+            silenceStartAt = null;
           }
         } else {
           silenceStartAt = null;
         }
-      } else {
-        silenceStartAt = null;
       }
 
       requestAnimationFrame(step);
@@ -473,6 +487,12 @@
       mirrorInput.addEventListener('change', () => {
         isMirrored = mirrorInput.checked;
         preview.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+        saveSettings();
+      });
+    }
+    if(audioUpdateRateInput){
+      audioUpdateRateInput.addEventListener('change', () => {
+        audioLevelUpdateInterval = Math.max(50, Math.min(500, Math.floor(Number(audioUpdateRateInput.value)||100)));
         saveSettings();
       });
     }

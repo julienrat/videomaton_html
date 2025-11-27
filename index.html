@@ -44,6 +44,12 @@
                 </div>
 
                 <div class="control-group">
+                    <label for="audioUpdateRateInput">Fréquence vu-mètre (ms)</label>
+                    <input id="audioUpdateRateInput" type="number" min="50" max="500" step="50" value="100">
+                    <div class="muted small">Intervalle de mise à jour du vu-mètre. Plus élevé = moins de CPU utilisé.</div>
+                </div>
+
+                <div class="control-group">
                     <label for="countdownInput">Compte à rebours (secondes)</label>
                     <input id="countdownInput" type="number" min="0" step="1" value="3">
                 </div>
