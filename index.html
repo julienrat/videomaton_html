@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Videomaton</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="app">
+        <header class="top-bar">
+            <h1>Videomaton</h1>
+            <div class="spacer"></div>
+            <button id="openSettingsBtn" class="btn secondary" aria-haspopup="dialog" aria-controls="settingsDialog">Paramètres</button>
+        </header>
+
+        <main class="layout no-controls">
+            <aside class="controls is-hidden">
+                <div class="control-group">
+                    <label for="cameraSelect">Caméra</label>
+                    <select id="cameraSelect"></select>
+                </div>
+
+                <div class="control-group">
+                    <label for="questionInput">Phrase (au-dessus de la caméra)</label>
+                    <input id="questionInput" type="text" placeholder="Regardez la caméra et répondez…">
+                </div>
+
+                <div class="control-group grid-2">
+                    <button id="startBtn" class="btn primary">Démarrer</button>
+                    <button id="stopBtn" class="btn danger" disabled>Arrêter</button>
+                </div>
+
+                <div class="control-group">
+                    <label for="hotkeyInput">Touche raccourci (démarrer/arrêter)</label>
+                    <input id="hotkeyInput" type="text" placeholder="Appuyez pour définir" readonly>
+                    <button id="clearHotkeyBtn" class="btn small">Effacer</button>
+                </div>
+
+                <div class="control-group">
+                    <label for="cooldownInput">Pause anti double-clic (ms)</label>
+                    <input id="cooldownInput" type="number" min="0" step="50" value="600">
+                    <div class="muted small">Ignorer les appuis rapprochés pour éviter les doubles démarrages/arrêts.</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="countdownInput">Compte à rebours (secondes)</label>
+                    <input id="countdownInput" type="number" min="0" step="1" value="3">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input id="mirrorInput" type="checkbox">
+                        Miroir (retourner la caméra horizontalement)
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <label>Fond</label>
+                    <div class="grid-2">
+                        <input id="bgColorInput" type="color" value="#101317" title="Couleur de fond">
+                        <input id="bgImageInput" type="url" placeholder="URL d’image (optionnel)">
+                    </div>
+                    <div class="grid-2">
+                        <input id="bgImageFileInput" type="file" accept="image/*">
+                        <button id="clearBgImageBtn" class="btn small" type="button">Retirer l’image</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="silenceThresholdInput">Seuil de silence (0-1)</label>
+                    <input id="silenceThresholdInput" type="range" min="0" max="1" step="0.01" value="0.04">
+                    <div class="meter mini" title="Vu-mètre (live)">
+                        <div class="meter-fill" id="audioLevelSettings"></div>
+                        <div class="threshold-marker" id="audioThresholdMarker"></div>
+                    </div>
+                    <div class="grid-2">
+                        <input id="silenceThresholdNumber" type="number" min="0" max="1" step="0.01" value="0.04" title="Valeur du seuil">
+                        <button id="calibrateThresholdBtn" class="btn small" type="button">Calibrer au niveau actuel</button>
+                    </div>
+                    <div class="muted small">Plus bas = plus sensible. Utilisez “Calibrer” pour fixer le seuil selon le niveau actuel.</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="silenceDurationInput">Durée de silence avant arrêt (secondes)</label>
+                    <input id="silenceDurationInput" type="number" min="0.2" step="0.1" value="2">
+                </div>
+
+                <div class="control-group">
+                    <button id="chooseDirBtn" class="btn secondary">Choisir dossier d’enregistrement</button>
+                    <div id="chosenDirLabel" class="small muted">Aucun dossier choisi (fallback: téléchargement)</div>
+                </div>
+
+                <div class="control-group">
+                    <label>État</label>
+                    <div id="status" class="status">Prêt</div>
+                </div>
+            </aside>
+
+            <section class="stage" id="stage">
+                <div class="question" id="questionText"></div>
+                <div class="video-wrapper" id="videoWrapper">
+                    <video id="preview" autoplay playsinline muted></video>
+                    <div class="recording-border" id="recordingBorder"></div>
+                    <div class="rec-indicator" id="recIndicator" aria-hidden="true">
+                        <span class="dot"></span>
+                        <span class="label">REC</span>
+                    </div>
+                    <div class="countdown" id="countdown"></div>
+                </div>
+                <div class="meters">
+                    <div class="meter">
+                        <div class="meter-fill" id="audioLevel"></div>
+                    </div>
+                    <span class="small muted">Niveau audio</span>
+                </div>
+            </section>
+        </main>
+
+        <dialog id="settingsDialog" class="dialog">
+            <form method="dialog" class="dialog-content">
+                <h2>Paramètres</h2>
+                <p class="small muted">Les paramètres sont sauvegardés dans votre navigateur.</p>
+                <div class="dialog-actions">
+                    <button id="closeSettingsBtn" class="btn">Fermer</button>
+                </div>
+            </form>
+        </dialog>
+    </div>
+
+    <script src="app.js"></script>
+    <noscript>Veuillez activer JavaScript pour utiliser ce videomaton.</noscript>
+</body>
+</html>
+
