@@ -33,6 +33,7 @@ L'application utilise les API Web modernes (MediaRecorder, Web Audio API, File S
 - **Vu-mètre en temps réel** avec visualisation du niveau audio
 - **Calibration automatique** du seuil de silence
 - **Seuil et durée configurables** pour s'adapter à tous les environnements
+- **Optimisé CPU** : fréquence de mise à jour ajustable pour réduire la charge processeur
 
 ### ⌨️ Contrôles et raccourcis
 - **Touche personnalisable** pour démarrer/arrêter l'enregistrement
@@ -105,6 +106,7 @@ npx serve
 | **Seuil de silence** | Niveau audio considéré comme silence (0-1) |
 | **Durée de silence** | Temps de silence avant arrêt automatique |
 | **Pause anti double-clic** | Délai minimum entre deux déclenchements |
+| **Fréquence vu-mètre** | Intervalle de mise à jour (ms) - plus élevé = moins de CPU |
 
 ### Raccourcis clavier
 
